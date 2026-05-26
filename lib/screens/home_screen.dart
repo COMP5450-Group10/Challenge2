@@ -160,77 +160,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
             _sectionTitle('What problem are you solving?'),
             const SizedBox(height: 12),
+            _problemSolverSection(),
 
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1.15,
-              children: [
-                _problemCard(
-                  icon: Icons.open_in_full,
-                  title: 'Too Cramped',
-                  subtitle: 'Make the room feel more spacious',
-                  color: const Color(0xFFB98B60),
-                  onTap: () {
-                    openRecommendation(
-                      roomType: 'Apartment',
-                      mood: 'Functional',
-                      budgetLevel: 'Low',
-                      lightingCondition: 'Medium',
-                      spaceProblem: 'Too small',
-                    );
-                  },
-                ),
-                _problemCard(
-                  icon: Icons.light_mode_outlined,
-                  title: 'Too Dark',
-                  subtitle: 'Improve mood with lighting',
-                  color: const Color(0xFFC4A35A),
-                  onTap: () {
-                    openRecommendation(
-                      roomType: 'Bedroom',
-                      mood: 'Relaxing',
-                      budgetLevel: 'Medium',
-                      lightingCondition: 'Dark',
-                      spaceProblem: 'Too dark',
-                    );
-                  },
-                ),
-                _problemCard(
-                  icon: Icons.inventory_2_outlined,
-                  title: 'Disorganized',
-                  subtitle: 'Use storage and zoning',
-                  color: const Color(0xFF8FA58E),
-                  onTap: () {
-                    openRecommendation(
-                      roomType: 'Apartment',
-                      mood: 'Functional',
-                      budgetLevel: 'Low',
-                      lightingCondition: 'Medium',
-                      spaceProblem: 'Disorganized',
-                    );
-                  },
-                ),
-                _problemCard(
-                  icon: Icons.palette_outlined,
-                  title: 'Not Stylish',
-                  subtitle: 'Create a clear identity',
-                  color: const Color(0xFF8B5E3C),
-                  onTap: () {
-                    openRecommendation(
-                      roomType: 'Living Room',
-                      mood: 'Luxury',
-                      budgetLevel: 'High',
-                      lightingCondition: 'Medium',
-                      spaceProblem: 'Not stylish',
-                    );
-                  },
-                ),
-              ],
-            ),
 
             const SizedBox(height: 30),
 
@@ -292,6 +223,182 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  Widget _problemSolverSection() {
+    final problems = [
+      {
+        'icon': Icons.open_in_full,
+        'title': 'Cramped room',
+        'subtitle': 'Make the room feel more spacious',
+        'color': const Color(0xFFB98B60),
+        'roomType': 'Apartment',
+        'mood': 'Functional',
+        'budgetLevel': 'Low',
+        'lightingCondition': 'Medium',
+        'spaceProblem': 'Too small',
+      },
+      {
+        'icon': Icons.light_mode_outlined,
+        'title': 'Dark room',
+        'subtitle': 'Improve mood with lighting',
+        'color': const Color(0xFFC4A35A),
+        'roomType': 'Bedroom',
+        'mood': 'Relaxing',
+        'budgetLevel': 'Medium',
+        'lightingCondition': 'Dark',
+        'spaceProblem': 'Too dark',
+      },
+      {
+        'icon': Icons.inventory_2_outlined,
+        'title': 'Disorganized',
+        'subtitle': 'Use storage and zoning',
+        'color': const Color(0xFF8FA58E),
+        'roomType': 'Apartment',
+        'mood': 'Functional',
+        'budgetLevel': 'Low',
+        'lightingCondition': 'Medium',
+        'spaceProblem': 'Disorganized',
+      },
+      {
+        'icon': Icons.palette_outlined,
+        'title': 'Not Stylish',
+        'subtitle': 'Create a clear identity',
+        'color': const Color(0xFF8B5E3C),
+        'roomType': 'Living Room',
+        'mood': 'Luxury',
+        'budgetLevel': 'High',
+        'lightingCondition': 'Medium',
+        'spaceProblem': 'Not stylish',
+      },
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+
+        int columns;
+        double cardHeight;
+
+        if (width >= 1000) {
+          columns = 4;
+          cardHeight = 190;
+        } else if (width >= 700) {
+          columns = 2;
+          cardHeight = 180;
+        } else {
+          columns = 2;
+          cardHeight = 155;
+        }
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: problems.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columns,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            mainAxisExtent: cardHeight,
+          ),
+          itemBuilder: (context, index) {
+            final problem = problems[index];
+
+            return _responsiveProblemCard(
+              icon: problem['icon'] as IconData,
+              title: problem['title'] as String,
+              subtitle: problem['subtitle'] as String,
+              color: problem['color'] as Color,
+              onTap: () {
+                openRecommendation(
+                  roomType: problem['roomType'] as String,
+                  mood: problem['mood'] as String,
+                  budgetLevel: problem['budgetLevel'] as String,
+                  lightingCondition: problem['lightingCondition'] as String,
+                  spaceProblem: problem['spaceProblem'] as String,
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _responsiveProblemCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWideCard = constraints.maxWidth > 220;
+
+        final iconSize = isWideCard ? 34.0 : 26.0;
+        final titleSize = isWideCard ? 20.0 : 16.0;
+        final subtitleSize = isWideCard ? 14.0 : 12.0;
+        final padding = isWideCard ? 22.0 : 16.0;
+        final avatarRadius = isWideCard ? 28.0 : 22.0;
+
+        return Material(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          elevation: 5,
+          shadowColor: Colors.black12,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(28),
+            onTap: onTap,
+            child: Container(
+              padding: EdgeInsets.all(padding),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(
+                  color: color.withOpacity(0.18),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: avatarRadius,
+                    backgroundColor: color.withOpacity(0.14),
+                    child: Icon(
+                      icon,
+                      color: color,
+                      size: iconSize,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: AppTheme.darkBrown,
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: subtitleSize,
+                      height: 1.25,
+                      color: AppTheme.charcoal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
