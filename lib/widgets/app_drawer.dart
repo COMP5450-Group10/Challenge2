@@ -39,7 +39,7 @@ class AppDrawer extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Ambient interior design portfolio',
+                    'Interior design portfolio',
                     style: TextStyle(color: Colors.white70),
                   ),
                 ],
