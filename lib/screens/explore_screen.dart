@@ -107,6 +107,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   }
 
   void handleCompare(DesignProject project) {
+    // First project selected
     if (compareProject == null) {
       setState(() {
         compareProject = project;
@@ -114,24 +115,42 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${project.title} selected for comparison. Choose another project.'),
-        ),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => CompareScreen(
-            first: compareProject!,
-            second: project,
+          content: Text(
+            '${project.title} selected. Choose another project to compare.',
           ),
         ),
       );
 
-      setState(() {
-        compareProject = null;
-      });
+      return;
     }
+
+    // Store the first project safely before resetting compareProject
+    final DesignProject firstProject = compareProject!;
+
+    // Prevent comparing the same project with itself
+    if (firstProject.id == project.id) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please choose a different project to compare.'),
+        ),
+      );
+      return;
+    }
+
+    // Reset selection before opening compare page
+    setState(() {
+      compareProject = null;
+    });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CompareScreen(
+          first: firstProject,
+          second: project,
+        ),
+      ),
+    );
   }
 
   @override
@@ -194,6 +213,42 @@ class _ExploreScreenState extends State<ExploreScreen> {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
+            if (compareProject != null) ...[
+              Container(
+                padding: const EdgeInsets.all(14),
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppTheme.softBeige,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.compare_arrows,
+                      color: AppTheme.warmBrown,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        '${compareProject!.title} selected. Tap Compare on another project.',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.darkBrown,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          compareProject = null;
+                        });
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
 
             ...filteredProjects.map((project) {
               return ProjectCard(
